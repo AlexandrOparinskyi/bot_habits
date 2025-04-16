@@ -6,6 +6,8 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
 from config import load_config
+from handlers.register_handlers import register_router
+from handlers.user_handlers import user_router
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +20,9 @@ async def main():
     bot: Bot = Bot(token=config.tg_bot.token,
                    default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     dp: Dispatcher = Dispatcher()
+
+    dp.include_router(user_router)
+    dp.include_router(register_router)
 
     try:
         await bot.delete_webhook(drop_pending_updates=True)
