@@ -1,5 +1,5 @@
-from sqlalchemy import Column, Integer, BigInteger, String, DateTime, Boolean
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy import Column, Integer, BigInteger, String, DateTime, Boolean, ForeignKey
+from sqlalchemy.orm import DeclarativeBase, relationship
 from sqlalchemy.sql import func
 
 
@@ -14,3 +14,23 @@ class User(Base):
     username = Column(String, unique=True, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     is_active = Column(Boolean, default=True, nullable=False)
+
+    habits = relationship("Habit",
+                          back_populates="owner",
+                          lazy="selectin")
+
+
+class Habit(Base):
+    __tablename__ = "habits"
+
+    text = Column(String, nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    is_active = Column(Boolean, nullable=False, default=True)
+    frequency = Column(Integer, default=1, nullable=False)
+    count_days = Column(Integer, default=0, nullable=0)
+    is_completed = Column(Boolean, nullable=False, default=False)
+
+    owner = relationship("User",
+                         back_populates="habits",
+                         lazy="selectin")
