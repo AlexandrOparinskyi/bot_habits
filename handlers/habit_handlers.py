@@ -8,6 +8,7 @@ from aiogram.types import Message, CallbackQuery
 from keyboards.habit_keyboard import (EXAMPLE_HABIT_TEXTS,
                                       create_example_habit_text_keyboard, create_frequency_habit_keyboard)
 from services.database_services import get_user_by_id, create_habit
+from services.habits_services import create_text_with_count_days
 
 habit_router = Router()
 storage = MemoryStorage()
@@ -66,10 +67,9 @@ async def process_register_frequency_cb(callback: CallbackQuery,
     await create_habit(data.get("habit_text"),
                        int(frequency),
                        callback.from_user.id)
-    await callback.message.answer(f"Ваша привычка '{data.get('habit_text')}"
-                                  f"' создана\n"
-                                  f"Я буду напоминать про неё раз в "
-                                  f"{frequency} дней")
+    text = create_text_with_count_days(data.get("habit_text"),
+                                       int(frequency))
+    await callback.message.answer(text)
 
 
 @habit_router.message(StateFilter(HabitState.frequency),
@@ -80,12 +80,13 @@ async def process_register_frequency(message: Message, state: FSMContext):
     await create_habit(data.get("habit_text"),
                        int(message.text),
                        message.from_user.id)
-    await message.answer(f"Ваша привычка '{data.get('habit_text')}"
-                         f"' создана\n"
-                         f"Я буду напоминать про неё раз в "
-                         f"{message.text} дней")
+    text = create_text_with_count_days(data.get("habit_text"),
+                                       int(message.text))
+    await message.answer(text)
 
 
 @habit_router.message(StateFilter(HabitState.frequency))
 async def error_process_register_frequency(message: Message):
-    await message.answer("Какая-то ошибка, введите число N")
+    keyboard = create_frequency_habit_keyboard()
+    await message.answer("Какая-то ошибка, введите число N или выберите"
+                         " ниже", reply_markup=keyboard)
