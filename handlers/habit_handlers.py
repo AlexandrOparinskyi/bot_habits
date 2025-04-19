@@ -7,7 +7,7 @@ from aiogram.types import Message, CallbackQuery
 
 from keyboards.habit_keyboard import (EXAMPLE_HABIT_TEXTS,
                                       create_example_habit_text_keyboard, create_frequency_habit_keyboard)
-from services.database_services import get_user_by_id
+from services.database_services import get_user_by_id, create_habit
 
 habit_router = Router()
 storage = MemoryStorage()
@@ -33,14 +33,14 @@ async def process_start_add_habit(message: Message, state: FSMContext):
 
 
 @habit_router.callback_query(StateFilter(HabitState.text),
-                             F.data in EXAMPLE_HABIT_TEXTS.keys())
+                             lambda x: x.data in EXAMPLE_HABIT_TEXTS.keys())
 async def process_register_text_habit_cb(callback: CallbackQuery,
                                       state: FSMContext):
     await state.set_state(HabitState.frequency)
     await state.update_data(habit_text=EXAMPLE_HABIT_TEXTS[callback.data])
     keyboard = create_frequency_habit_keyboard()
     await callback.message.answer("Отлично\n"
-                                  "Как часто напомнить про эту привычку?\n"
+                                  "Как часто напоминать про эту привычку?\n"
                                   "Раз в N дней (введите N) или выберите "
                                   "ниже", reply_markup=keyboard)
 
@@ -49,4 +49,13 @@ async def process_register_text_habit_cb(callback: CallbackQuery,
                              F.data.startswith("frequency_"))
 async def process_register_frequency_cb(callback: CallbackQuery,
                                         state: FSMContext):
-    pass
+    data = await state.get_data()
+    _, frequency = callback.data.split("_")
+    await state.clear()
+    await create_habit(data.get("habit_text"),
+                       int(frequency),
+                       callback.from_user.id)
+    await callback.message.answer(f"Ваша привычка '{data.get('habit_text')}"
+                                  f"' создана\n"
+                                  f"Я буду напоминать про неё раз в "
+                                  f"{frequency} дней")

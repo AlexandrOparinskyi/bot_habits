@@ -1,7 +1,7 @@
-from sqlalchemy import select
+from sqlalchemy import select, insert
 
 from database.connect import get_async_session
-from database.models import User
+from database.models import User, Habit
 
 
 async def get_user_by_id(user_id: int) -> User:
@@ -11,3 +11,15 @@ async def get_user_by_id(user_id: int) -> User:
         )
         user = await session.scalar(user_query)
         return user
+
+
+async def create_habit(text: str, frequency: int, user_id: int) -> None:
+    user = await get_user_by_id(user_id)
+    async with get_async_session() as session:
+        habit_query = insert(Habit).values(
+            text=text,
+            frequency=frequency,
+            user_id=user.id
+        )
+        await session.execute(habit_query)
+        await session.commit()

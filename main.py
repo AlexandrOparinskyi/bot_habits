@@ -6,6 +6,7 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
 from config import load_config
+from handlers.habit_handlers import habit_router
 from handlers.register_handlers import register_router
 from handlers.user_handlers import user_router
 
@@ -23,6 +24,7 @@ async def main():
 
     dp.include_router(user_router)
     dp.include_router(register_router)
+    dp.include_router(habit_router)
 
     try:
         await bot.delete_webhook(drop_pending_updates=True)
