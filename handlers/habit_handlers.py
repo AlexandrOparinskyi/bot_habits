@@ -28,8 +28,8 @@ async def process_start_add_habit(message: Message, state: FSMContext):
 
     await state.set_state(HabitState.text)
     keyboard = create_example_habit_text_keyboard()
-    await message.answer("Ввести привычку, которую хотите добавить или "
-                         "выберите из списка ниже", reply_markup=keyboard)
+    await message.answer("Введи привычку, которую хочешь добавить или "
+                         "выбери из списка ниже", reply_markup=keyboard)
 
 
 @habit_router.callback_query(StateFilter(HabitState.text),
@@ -43,6 +43,17 @@ async def process_register_text_habit_cb(callback: CallbackQuery,
                                   "Как часто напоминать про эту привычку?\n"
                                   "Раз в N дней (введите N) или выберите "
                                   "ниже", reply_markup=keyboard)
+
+
+@habit_router.message(StateFilter(HabitState.text))
+async def process_register_text_habit(message: Message, state: FSMContext):
+    await state.set_state(HabitState.frequency)
+    await state.update_data(habit_text=message.text)
+    keyboard = create_frequency_habit_keyboard()
+    await message.answer("Отлично\n"
+                         "Как часто напоминать про эту привычку?\n"
+                         "Раз в N дней (введите N) или выберите "
+                         "ниже", reply_markup=keyboard)
 
 
 @habit_router.callback_query(StateFilter(HabitState.frequency),
@@ -59,3 +70,22 @@ async def process_register_frequency_cb(callback: CallbackQuery,
                                   f"' создана\n"
                                   f"Я буду напоминать про неё раз в "
                                   f"{frequency} дней")
+
+
+@habit_router.message(StateFilter(HabitState.frequency),
+                      F.text.isdigit())
+async def process_register_frequency(message: Message, state: FSMContext):
+    data = await state.get_data()
+    await state.clear()
+    await create_habit(data.get("habit_text"),
+                       int(message.text),
+                       message.from_user.id)
+    await message.answer(f"Ваша привычка '{data.get('habit_text')}"
+                         f"' создана\n"
+                         f"Я буду напоминать про неё раз в "
+                         f"{message.text} дней")
+
+
+@habit_router.message(StateFilter(HabitState.frequency))
+async def error_process_register_frequency(message: Message):
+    await message.answer("Какая-то ошибка, введите число N")
