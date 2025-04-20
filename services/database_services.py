@@ -1,3 +1,5 @@
+from typing import List
+
 from sqlalchemy import select, insert
 
 from database.connect import get_async_session
@@ -23,3 +25,12 @@ async def create_habit(text: str, frequency: int, user_id: int) -> None:
         )
         await session.execute(habit_query)
         await session.commit()
+
+
+async def get_habits_by_user_id(user_id: int) -> List[Habit]:
+    user = await get_user_by_id(user_id)
+    async with get_async_session() as session:
+        habits = await session.scalars(select(Habit).where(
+            Habit.user_id == user.id
+        ).order_by(Habit.id.desc()))
+        return habits
