@@ -28,6 +28,7 @@ class Habit(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     is_active = Column(Boolean, nullable=False, default=True)
     frequency = Column(Integer, default=1, nullable=False)
+    count_days = Column(Integer, default=0, nullable=False)
     is_completed = Column(Boolean, nullable=False, default=False)
 
     owner = relationship("User",
