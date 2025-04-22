@@ -34,3 +34,11 @@ async def get_habits_by_user_id(user_id: int) -> List[Habit]:
             Habit.user_id == user.id
         ).order_by(Habit.id.desc()))
         return habits
+
+
+async def get_habit_by_id(habit_id: int) -> Habit:
+    async with get_async_session() as session:
+        habit = await session.scalar(select(Habit).where(
+            Habit.id == habit_id
+        ))
+        return habit
