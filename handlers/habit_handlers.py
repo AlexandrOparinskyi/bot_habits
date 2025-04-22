@@ -7,7 +7,7 @@ from aiogram.types import Message, CallbackQuery
 
 from keyboards.habit_keyboard import (EXAMPLE_HABIT_TEXTS,
                                       create_example_habit_text_keyboard, create_frequency_habit_keyboard)
-from services.database_services import get_user_by_id, create_habit
+from services.database_services import get_user_by_id, create_habit, view_completed_habit_by_user_id
 from services.habits_services import create_text_with_count_days
 
 habit_router = Router()
@@ -90,3 +90,23 @@ async def error_process_register_frequency(message: Message):
     keyboard = create_frequency_habit_keyboard()
     await message.answer("Какая-то ошибка, введите число N или выберите"
                          " ниже", reply_markup=keyboard)
+
+
+@habit_router.message(Command(commands="show_completed_habits"))
+async def show_completed_habits(message: Message):
+    habits = await view_completed_habit_by_user_id(message.from_user.id)
+    text = "<b>Ваши выполненные задачи:</b>\n\n"
+    for h in habits:
+        text += "  * " + h.text + "\n"
+
+    await message.answer(text)
+
+
+@habit_router.callback_query(F.data == "show_completed_habits")
+async def show_completed_habits_cb(callback: CallbackQuery):
+    habits = await view_completed_habit_by_user_id(callback.from_user.id)
+    text = "<b>Ваши выполненные задачи:</b>\n\n"
+    for h in habits:
+        text += "  * " + h.text + "\n"
+
+    await callback.message.answer(text)

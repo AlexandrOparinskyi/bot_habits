@@ -13,8 +13,12 @@ async def create_main_menu(bot: Bot):
             description="Профиль"
         ),
         BotCommand(
-            command="/help",
-            description="Помощь"
+            command="/profile",
+            description="Профиль"
+        ),
+        BotCommand(
+            command="/show_completed_habits",
+            description="Выполненные задачи"
         ),
         BotCommand(
             command="/register",
