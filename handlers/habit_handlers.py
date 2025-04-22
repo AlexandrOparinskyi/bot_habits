@@ -116,4 +116,4 @@ async def show_completed_habits_cb(callback: CallbackQuery):
         )]
     ])
 
-    await callback.message.answer(text, reply_markup=keyboard)
+    await callback.message.edit_text(text, reply_markup=keyboard)

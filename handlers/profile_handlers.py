@@ -6,9 +6,15 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import Message, CallbackQuery
 
 from handlers.habit_handlers import show_completed_habits_cb
-from keyboards.profile_keyboards import create_profile_keyboards, create_habit_keyboard
-from services.database_services import get_user_by_id, get_habits_by_user_id, get_habit_by_id, edit_habit_text, \
-    edit_habit_frequency, delete_habit_by_id, habit_id_completed
+from keyboards.profile_keyboards import (create_profile_keyboards,
+                                         create_habit_keyboard)
+from services.database_services import (get_user_by_id,
+                                        get_habits_by_user_id,
+                                        get_habit_by_id,
+                                        edit_habit_text,
+                                        edit_habit_frequency,
+                                        delete_habit_by_id,
+                                        habit_id_completed)
 
 profile_router = Router()
 storage = MemoryStorage()
