@@ -27,14 +27,19 @@ async def create_habit(text: str, frequency: int, user_id: int) -> None:
         await session.commit()
 
 
-async def get_habits_by_user_id(user_id: int) -> List[Habit]:
+async def get_habits_by_user_id(user_id: int) -> tuple[List[Habit], int]:
     user = await get_user_by_id(user_id)
     async with get_async_session() as session:
         habits = await session.scalars(select(Habit).where(
             and_(Habit.user_id == user.id,
                  Habit.is_completed==False)
         ).order_by(Habit.id.desc()))
-        return habits
+        count = await session.execute(select(Habit).where(
+            and_(Habit.user_id == user.id,
+                 Habit.is_completed==False)
+        ))
+
+        return habits, len(count.all())
 
 
 async def get_habit_by_id(habit_id: int) -> Habit:

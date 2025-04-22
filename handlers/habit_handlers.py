@@ -3,7 +3,7 @@ from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 
 from keyboards.habit_keyboard import (EXAMPLE_HABIT_TEXTS,
                                       create_example_habit_text_keyboard, create_frequency_habit_keyboard)
@@ -109,4 +109,11 @@ async def show_completed_habits_cb(callback: CallbackQuery):
     for h in habits:
         text += "  * " + h.text + "\n"
 
-    await callback.message.answer(text)
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(
+            text="Вернуться в профиль",
+            callback_data="back_to_profile"
+        )]
+    ])
+
+    await callback.message.answer(text, reply_markup=keyboard)

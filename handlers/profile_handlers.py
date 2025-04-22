@@ -22,29 +22,28 @@ class ProfileState(StatesGroup):
 @profile_router.message(Command(commands="profile"))
 async def process_profile_command(message: Message):
     user = await get_user_by_id(message.from_user.id)
-    habits = await get_habits_by_user_id(message.from_user.id)
+    habits, count = await get_habits_by_user_id(message.from_user.id)
     keyboard = create_profile_keyboards(habits)
     await message.answer(f"Профиль пользователя <b>{user.username}</b>\n\n"
                          f"Количество добавленных привычек: "
-                         f"<b>{len(list(habits))}</b>\n"
+                         f"<b>{count}</b>\n"
                          f"Количество выполненных привычек: "
-                         f"<b>{len(user.habits) - len(list(habits))}</b>",
+                         f"<b>{len(user.habits) - count}</b>",
                          reply_markup=keyboard)
 
 
 @profile_router.callback_query(F.data == "back_to_profile")
 async def process_profile_command_cb(callback: CallbackQuery):
     user = await get_user_by_id(callback.from_user.id)
-    habits = await get_habits_by_user_id(callback.from_user.id)
+    habits, count = await get_habits_by_user_id(callback.from_user.id)
     keyboard = create_profile_keyboards(habits)
-    await callback.message.answer(f"Профиль пользователя <b>{user.username}"
-                                  f"</b>\n\n"
-                                  f"Количество добавленных привычек: "
-                                  f"<b>{len(list(habits))}</b>\n"
-                                  f"Количество выполненных привычек: "
-                                  f"<b>{len(user.habits) - len(list(habits))}"
-                                  f"</b>",
-                                  reply_markup=keyboard)
+    await callback.message.edit_text(f"Профиль пользователя <b>"
+                                     f"{user.username}</b>\n\n"
+                                     f"Количество добавленных привычек: "
+                                     f"<b>{count}</b>\n"
+                                     f"Количество выполненных привычек: "
+                                     f"<b>{len(user.habits) - count}</b>",
+                                     reply_markup=keyboard)
 
 
 @profile_router.callback_query(F.data.startswith("view_habit_"))
