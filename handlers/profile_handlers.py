@@ -85,8 +85,8 @@ async def process_edit_text(message: Message, state: FSMContext):
     habit = await get_habit_by_id(data.get("habit_id"))
     keyboard = create_habit_keyboard(habit)
     await message.answer(f"Привычка <b>{habit.text}</b>\n"
-                            f"Напоминаю раз в {habit.frequency} "
-                            f"дней", reply_markup=keyboard)
+                         f"Напоминаю раз в {habit.frequency} "
+                         f"дней", reply_markup=keyboard)
 
 
 @profile_router.message(StateFilter(ProfileState.edit_frequency),

@@ -3,11 +3,14 @@ from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import (Message, CallbackQuery,
+                           InlineKeyboardMarkup, InlineKeyboardButton)
 
 from keyboards.habit_keyboard import (EXAMPLE_HABIT_TEXTS,
-                                      create_example_habit_text_keyboard, create_frequency_habit_keyboard)
-from services.database_services import get_user_by_id, create_habit, view_completed_habit_by_user_id
+                                      create_example_habit_text_keyboard,
+                                      create_frequency_habit_keyboard)
+from services.database_services import (get_user_by_id, create_habit,
+                                        view_completed_habit_by_user_id)
 from services.habits_services import create_text_with_count_days
 
 habit_router = Router()
@@ -36,7 +39,7 @@ async def process_start_add_habit(message: Message, state: FSMContext):
 @habit_router.callback_query(StateFilter(HabitState.text),
                              lambda x: x.data in EXAMPLE_HABIT_TEXTS.keys())
 async def process_register_text_habit_cb(callback: CallbackQuery,
-                                      state: FSMContext):
+                                         state: FSMContext):
     await state.set_state(HabitState.frequency)
     await state.update_data(habit_text=EXAMPLE_HABIT_TEXTS[callback.data])
     keyboard = create_frequency_habit_keyboard()
