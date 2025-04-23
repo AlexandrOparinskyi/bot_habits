@@ -28,8 +28,8 @@ spreadsheet = gc.open_by_key(config.google_sheet.token)
 worksheet = spreadsheet.sheet1
 
 PRESENT_DATA = {
-    True: ("Да", (0, 1, 0)),
-    False: ("Нет", (1, 0, 0))
+    True: ("Выполнено", (0, 1, 0)),
+    False: ("Не выполнено", (1, 0, 0))
 }
 
 
