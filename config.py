@@ -17,9 +17,15 @@ class DataBase:
 
 
 @dataclass
+class GoogleSheet:
+    token: str
+
+
+@dataclass
 class Config:
     tg_bot: TgBot
     db: DataBase
+    google_sheet: GoogleSheet
 
 
 def load_config(path: str | None = None) -> Config:
@@ -35,5 +41,8 @@ def load_config(path: str | None = None) -> Config:
             db_name=env("DB_NAME"),
             db_user=env("DB_USER"),
             db_pass=env("DB_PASS"),
+        ),
+        google_sheet=GoogleSheet(
+            token=env("GOOGLE_SHEET_TOKEN")
         )
     )

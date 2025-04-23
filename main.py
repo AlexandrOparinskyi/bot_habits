@@ -10,6 +10,7 @@ from config import load_config
 from handlers.habit_handlers import habit_router
 from handlers.profile_handlers import profile_router
 from handlers.register_handlers import register_router
+from handlers.report_handlers import report_router
 from handlers.user_handlers import user_router
 from keyboards.main_menu import create_main_menu
 from services.send_message import send_message
@@ -31,13 +32,14 @@ async def main():
     dp.include_router(register_router)
     dp.include_router(habit_router)
     dp.include_router(profile_router)
+    dp.include_router(report_router)
 
     await create_main_menu(bot)
 
     scheduler.add_job(send_message,
                       "cron",
-                      hour=14,
-                      minute=11,
+                      hour=20,
+                      minute=00,
                       kwargs={"bot": bot})
     scheduler.start()
 

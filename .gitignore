@@ -1,3 +1,4 @@
 .env
 .venv
 .idea
+google_sheets_config.json
